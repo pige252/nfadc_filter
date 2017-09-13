@@ -34,23 +34,27 @@
   Int_t nbytes = 0;
   Int_t hnbytes = 0;
 //  int n = DATA_POINT;
-  int div = 2;
+  int div = 5;
   int n = DATA_POINT/div;
   float ave[n];
   float hp[n];
   float lp[n];
-  float hpt=0.95;
-  float lpt=0.5;
+  float hpt=0.99;
+  float hptt=(1.0+hpt)/2.0;
+  float lpt=0.95;
+  float lptt=1.0-lpt;
   float d_m;
   float ma_m;
   float ma[n];
   float mwd_m[n];
-  int m = 16;
-  int l = 4;
-  float pz = 0.50;
+//  int m = 16;
+//  int l = 4;
+  int m = 100;
+  int l = 50;
+  float pz = 0.0020;
   TH1F *h0 = new TH1F("h0","average filter",n,0,n*2.5);
-  TH1F *h1 = new TH1F("h1","high pass filter",n,0,n*2.5);
-  TH1F *h2 = new TH1F("h2","low pass filter",n,0,n*2.5);
+  TH1F *h1 = new TH1F("h1","low pass filter",n,0,n*2.5);
+  TH1F *h2 = new TH1F("h2","high pass filter",n,0,n*2.5);
   TH1F *h3 = new TH1F("h3","trapezoidal filter",n,0,n*2.5);
 
   for(int j=0;j<nevent;j++){
@@ -81,7 +85,7 @@
       ave[i]=ave[i]/div;
       h0->Fill(2.5*i+1,ave[i]);
     }
-
+/*
 ///////////////////////////////////////////////////////////////////////
 //	high pass filter
 
@@ -100,19 +104,38 @@
       lp[i] = lp[i-1] + lpt * (hp[i] - lp[i-1]);
       h2->Fill(2.5*i+1,lp[i]);
     }
+*/
+    lp[0]=ave[0];
+    for(int i=1;i<n;i++){
+      lp[i] = lptt*ave[i] + lpt*lp[i-1];
+      h1->Fill(2.5*i+1,lp[i]);
+    }
 
+    hp[0]=lp[0];
+    for(int i=1;i<n;i++){
+      hp[i] = hptt*lp[i] - hptt*lp[i-1] + hpt*hp[i-1];
+//      h2->Fill(2.5*i+1,hp[i]);
+    }
+
+    float hhp[n];
+    hhp[0]=hp[0];
+    for(int i=1;i<n;i++){
+      hhp[i] = hptt*hp[i] - hptt*hp[i-1] + hpt*hhp[i-1];
+      h2->Fill(2.5*i+1,hhp[i]);
+    }
 
 ///////////////////////////////////////////////////////////////////////
 //	trapezoidal filter
     for(int i=m;i<n;i++){
 //      d_m = CsI1.FADC1[i]-CsI1.FADC1[i-m];
-      d_m = lp[i]-lp[i-m];
+      d_m = hhp[i]-hhp[i-m];
       ma_m = 0.0;
       for(int k=i-m;k<i;k++){
 //        ma_m = ma_m + CsI1.FADC1[k];
-        ma_m = ma_m + lp[k];
+        ma_m = ma_m + hhp[k];
       }
-      mwd_m[i]=d_m + ((ma_m / m) - lp[k]) * pz;
+//      mwd_m[i]=d_m + ((ma_m / m) - lp[k]) * pz;
+      mwd_m[i]=d_m + ma_m  * pz;
 //      mwd_m[i]=d_m;
     }
 
@@ -123,8 +146,30 @@
     }
     for(int ij=m+l;ij<n;ij++) h3->Fill(2.5*ij+1,ma[ij]);
 ///////////////////////////////////////////////////////////////////////
+/*
+///////////////////////////////////////////////////////////////////////
+//	trapezoidal filter
+    for(int i=m;i<n;i++){
+//      d_m = CsI1.FADC1[i]-CsI1.FADC1[i-m];
+      d_m = ave[i]-ave[i-m];
+      ma_m = 0.0;
+      for(int k=i-m;k<i;k++){
+//        ma_m = ma_m + CsI1.FADC1[k];
+        ma_m = ma_m + ave[k];
+      }
+//      mwd_m[i]=d_m + ((ma_m / m) - lp[k]) * pz;
+      mwd_m[i]=d_m + (ma_m / m) * pz;
+//      mwd_m[i]=d_m;
+    }
 
-
+    for(int ii=l;ii<n;ii++){
+	ma[ii]=0.0;
+        for(int kk=ii-l;kk<ii;kk++) ma[ii]=ma[ii]+mwd_m[kk];
+	ma[ii]=ma[ii]/(float)l;
+    }
+    for(int ij=m+l;ij<n;ij++) h3->Fill(2.5*ij+1,ma[ij]);
+///////////////////////////////////////////////////////////////////////
+*/
 
 
     c1->cd(1);
@@ -146,6 +191,7 @@
 //    printf("evt number = %d\n trigger position=%d %d",j,tagposition[0], tagposition[1]);
 //      CSI->AutoSave();
     gSystem->Exec("date");
+    cout << j << endl;
    // scanf("%d",&temp);
     fgets(temp,255,stdin);
     if(temp[0]=='x'||temp[0]=='X'){
