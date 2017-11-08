@@ -56,12 +56,12 @@
   TH1F *h2 = new TH1F("h2","high pass filter",n,0,n*divv);
   TH1F *h3 = new TH1F("h3","trapezoidal filter",n,0,n*divv);
   TH1F *h4 = new TH1F("h4","trapezoidal filter",1000,0,1000);
-  Float_t ht[nevent];
+  Float_t ht;
 
   
   TFile *tp = new TFile("nfadc400_TP.root","recreate");
   TTree *td = new TTree("td","trapezoidal filter data");
-  td->Branch("ht",ht);
+  td->Branch("ht",&ht);
   
   for(int j=0;j<nevent;j++){
     nbytes +=CSI->GetEvent(j);
@@ -158,7 +158,7 @@
 	  ped = ped/atime;
 
 	  height[j]=ma[j][peaktime]-ped;
-    ht[j]=height[j];
+    ht=height[j];
 
     h4->Fill(height[j]);
     td->Fill();
