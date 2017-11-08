@@ -11,8 +11,8 @@
   HEAD->GetEntry(1);
   Int_t nevent=CSI->GetEntries();
   TCanvas *c1 = new TCanvas("c1", "KIMS", 1200, 900);
-//  c1->Divide(2,2);
-//  c1->Draw();
+  c1->Divide(2,2);
+  c1->Draw();
   CsI CsI1;
   
   DETNUM=1;
@@ -69,13 +69,13 @@
       ave[i]=0;
       for(int k=0;k<div;k++) ave[i]+=CsI1.FADC1[div*i+k];
       ave[i]=ave[i]/div;
-//      h0->Fill(i*divv+1,ave[i]);
+      h0->Fill(i*divv+1,ave[i]);
     }
 
     float lp[n];
     float hp[n];
     float hhp[n];
-    int th = 20;
+    int th = 10;
     int start= 0;
     int trigger = 0;
     lp[0] = ave[0];
@@ -88,8 +88,8 @@
       hhp[i] = hpb*hp[i] - hpb*hp[i-1] + hpa*hhp[i-1];
       if(hhp[i]>=th&&start==0) start = i;
 
-//      h1->Fill(i*divv+1,lp[i]);
-//      h2->Fill(i*divv+1,hhp[i]);
+      h1->Fill(i*divv+1,lp[i]);
+      h2->Fill(i*divv+1,hhp[i]);
     }
     for(int i=start;i<n;i++){
         if(hhp[i]<=0){
@@ -118,7 +118,7 @@
         for(int kk=ii-l;kk<ii;kk++) ma[j][ii]=ma[j][ii]+mwd_m[kk];
 	      ma[j][ii]=ma[j][ii]/(float)l;
     }
-//    for(int ij=m+l;ij<n;ij++) h3->Fill(ij*divv+1,ma[ij]);
+    for(int ij=m+l;ij<n;ij++) h3->Fill(ij*divv+1,ma[j][ij]);
 
 ///////////////////////////////////////////////////////////////////////
 //find real input data(=rawdata-ped)
@@ -126,7 +126,7 @@
 	  int peak = 640/div+l;//1.6us
 	  int peaktime = peak + trigger;
 	  float ped = 0.0;
-	  int atime = 1000;
+	  int atime = 100;
     int shift = 100;
 	  for(int pednum=start-atime-shift;pednum<start-shift;pednum++){
 		  ped += ma[j][pednum];
@@ -139,7 +139,7 @@
     h4->Fill(height[j]);
     td->Fill();
 
-/*
+
     c1->cd(1);
     h0->Draw();
     c1->cd(2);
@@ -148,10 +148,10 @@
     h2->Draw();
     c1->cd(4);
     h3->Draw();
-*/
 
-//    c1->Modified();
-//    c1->Update();
+
+    c1->Modified();
+    c1->Update();
     gSystem->Exec("date");
     cout << j << " : " << ped << " : " << peaktime << " : " << height[j] << endl;
    // scanf("%d",&temp);
@@ -160,8 +160,9 @@
     if(temp[0]=='x'||temp[0]=='X'){
       break;
     }
+    */
      //getchar();
-	 */
+	 
   }
   c1->cd();
   h4->Draw();
