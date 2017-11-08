@@ -10,7 +10,6 @@
   TTree *HEAD = (TTree*)a->Get("head");
   HEAD->GetEntry(1);
   Int_t nevent=CSI->GetEntries();
-  //int DATA_POINT = 0x4000;
   TCanvas *c1 = new TCanvas("c1", "KIMS", 1200, 900);
 //  c1->Divide(2,2);
 //  c1->Draw();
@@ -31,7 +30,6 @@
 
   Int_t nbytes = 0;
   Int_t hnbytes = 0;
-//  int n = DATA_POINT;
   int div = 5;
   float divv = 2.5*div;
   int n = DATA_POINT/div;
@@ -45,11 +43,8 @@
   float ma[nevent][n];
   float mwd_m[n];
   float height[nevent];
-//  int m = 16;
-//  int l = 4;
   int m = 5000/div;
   int l = 1500/div;
-//  float pz = 0.0020;
   float pz = 0.2000;
   TH1F *h0 = new TH1F("h0","average filter",n,0,n*divv);
   TH1F *h1 = new TH1F("h1","low pass filter",n,0,n*divv);
@@ -76,26 +71,6 @@
       ave[i]=ave[i]/div;
 //      h0->Fill(i*divv+1,ave[i]);
     }
-/*
-///////////////////////////////////////////////////////////////////////
-//	high pass filter
-
-    hp[0]=ave[0];
-    for(int i=1;i<n;i++){
-      hp[i] = hpa * (hp[i-1] + ave[i] - ave[i-1]);
-      h1->Fill(2.5*i+1,hp[i]);
-    }
-      
-///////////////////////////////////////////////////////////////////////
-//	low pass filter
-
-
-    lp[0]=hp[0];
-    for(int i=1;i<n;i++){
-      lp[i] = lp[i-1] + lpa * (hp[i] - lp[i-1]);
-      h2->Fill(2.5*i+1,lp[i]);
-    }
-*/
 
     float lp[n];
     float hp[n];
@@ -144,6 +119,7 @@
 	      ma[j][ii]=ma[j][ii]/(float)l;
     }
 //    for(int ij=m+l;ij<n;ij++) h3->Fill(ij*divv+1,ma[ij]);
+
 ///////////////////////////////////////////////////////////////////////
 //find real input data(=rawdata-ped)
 ///////////////////////////////////////////////////////////////////////
