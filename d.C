@@ -49,8 +49,8 @@
   float mwd_m[n];
 //  int m = 16;
 //  int l = 4;
-  int m = 100;
-  int l = 50;
+  int m = 1000;
+  int l = 300;
   float pz = 0.0020;
   TH1F *h0 = new TH1F("h0","average filter",n,0,n*2.5);
   TH1F *h1 = new TH1F("h1","low pass filter",n,0,n*2.5);
@@ -127,15 +127,14 @@
 ///////////////////////////////////////////////////////////////////////
 //	trapezoidal filter
     for(int i=m;i<n;i++){
-//      d_m = CsI1.FADC1[i]-CsI1.FADC1[i-m];
-      d_m = hhp[i]-hhp[i-m];
+      d_m = ave[i]-ave[i-m];
       ma_m = 0.0;
       for(int k=i-m;k<i;k++){
 //        ma_m = ma_m + CsI1.FADC1[k];
-        ma_m = ma_m + hhp[k];
+        ma_m = ma_m + ave[k];
       }
-//      mwd_m[i]=d_m + ((ma_m / m) - lp[k]) * pz;
-      mwd_m[i]=d_m + ma_m  * pz;
+      mwd_m[i]=d_m + (ma_m / m) * pz;
+//      mwd_m[i]=d_m + ma_m  * pz;
 //      mwd_m[i]=d_m;
     }
 

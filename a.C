@@ -102,7 +102,7 @@
 //	trapezoidal filter
     int cut = trigger+2*l;
     if(cut>n) cut = n;
-    for(int i=m;i<trigger+2*l;i++){
+    for(int i=m;i<cut;i++){
 //      d_m = CsI1.FADC1[i]-CsI1.FADC1[i-m];
       d_m = ave[i]-ave[i-m];
       ma_m = 0.0;
@@ -115,7 +115,7 @@
 //      mwd_m[i]=d_m;
     }
 
-    for(int ii=l;ii<trigger+2*l;ii++){
+    for(int ii=l;ii<cut;ii++){
         ma[j][ii]=0.0;
         for(int kk=ii-l;kk<ii;kk++) ma[j][ii]=ma[j][ii]+mwd_m[kk];
 	      ma[j][ii]=ma[j][ii]/(float)l;
