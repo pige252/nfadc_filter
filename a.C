@@ -100,6 +100,8 @@
 
 ///////////////////////////////////////////////////////////////////////
 //	trapezoidal filter
+    int cut = trigger+2*l;
+    if(cut>n) cut = n;
     for(int i=m;i<trigger+2*l;i++){
 //      d_m = CsI1.FADC1[i]-CsI1.FADC1[i-m];
       d_m = ave[i]-ave[i-m];
@@ -123,17 +125,18 @@
 ///////////////////////////////////////////////////////////////////////
 //find real input data(=rawdata-ped)
 ///////////////////////////////////////////////////////////////////////
-	  int peak = 640/div+l;//1.6us
-	  int peaktime = peak + trigger;
-	  float ped = 0.0;
-	  int atime = 100;
+	int peak = 640/div+l;//1.6us
+	int peaktime = peak + trigger;
+	float ped = 0.0;
+	int atime = 100;
     int shift = 100;
-	  for(int pednum=start-atime-shift;pednum<start-shift;pednum++){
-		  ped += ma[j][pednum];
-	  }
-	  ped = ped/atime;
+    if(start>atime+shift) start = atime + shift;
+	for(int pednum=start-atime-shift;pednum<start-shift;pednum++){
+	  ped += ma[j][pednum];
+	}
+	ped = ped/atime;
 
-	  height[j]=ma[j][peaktime]-ped;
+	height[j]=ma[j][peaktime]-ped;
     ht=height[j];
 
     h4->Fill(height[j]);

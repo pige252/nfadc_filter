@@ -1,6 +1,7 @@
 # nfadc_filter
 git config --global user.name "이름"
 git config --global user.email "깃허브 메일주소" // 매번 물어보는 귀찮음을 피하기 위해 설정.
+# pige252
 
 mkdir ~/MyProject   // 로컬 디렉토리 만들고
 cd ~/myproject      // 디렉토리로 들어가서
